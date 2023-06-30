@@ -1,34 +1,44 @@
 package com.Dockerates.BookLending.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.NonNull;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
 @Entity
-@Table(name="BookLending")
-@Embeddable
+@Table(name="bookLending")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 public class BookLendingEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transactionId")
+    private int transactionId;
+
     //need to add foreign key dependency
-    @NonNull
-    @Column(name="StudentId", nullable = false)
+    @Column(name="studentId" , nullable = false)
     private int studentId;
-    @NonNull
-    @Column(name="BookCode",nullable = false)
+
+    @Column(name="bookCode", nullable = false)
     private int bookCode;
 
-    @NonNull
-    @Column(name="IssueDate", nullable = false)
+    //
+
+    @Column(name = "issued", columnDefinition = "boolean default false")
+    private boolean issued;
+
+    @Column(name="issueDate")
     private Date issueDate;
 
-    @Column(name="ReturnDate")
+    @Column(name="returnDate")
     private Date returnDate;
-
-    @Column(name="Issued")
-    private boolean issued;
 
 }
