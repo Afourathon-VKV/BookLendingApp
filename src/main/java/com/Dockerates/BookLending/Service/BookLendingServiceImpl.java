@@ -4,6 +4,9 @@ import com.Dockerates.BookLending.Constants;
 import com.Dockerates.BookLending.Entity.Book;
 import com.Dockerates.BookLending.Entity.BookLendingEntity;
 import com.Dockerates.BookLending.Entity.Student;
+import com.Dockerates.BookLending.Exception.BookLended;
+import com.Dockerates.BookLending.Exception.BookNotFoundException;
+import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import com.Dockerates.BookLending.Repository.BookLendingRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,10 +27,10 @@ public class BookLendingServiceImpl implements BookLendingService {
 
     private final BookLendingRepository bookLendingRepository;
     @Override
-    public BookLendingEntity LendBook(BookLendingEntity bookLending) {
+    public BookLendingEntity LendBook(BookLendingEntity bookLending) throws BookLended {
         Optional<BookLendingEntity> bookLending1=bookLendingRepository.findByStudentIdAndBookCodeAndIssued(bookLending.getStudentId(),bookLending.getBookCode(),true);
         if(bookLending1.isPresent()){
-            throw new RuntimeException(); //need to add exception handler
+            throw new BookLended("This Book is lent to another student");
         }
         bookLending.setIssued(true);
         bookLending.setIssueDate(new Date());
@@ -35,7 +38,7 @@ public class BookLendingServiceImpl implements BookLendingService {
     }
 
     @Override
-    public BookLendingEntity ReturnBook(int transactionId) {
+    public BookLendingEntity ReturnBook(int transactionId) throws BookLended {
         Optional<BookLendingEntity> bookLending=bookLendingRepository.findByTransactionIdAndIssued(transactionId,true);
         if(bookLending.isPresent()){
             BookLendingEntity bookLending1=bookLending.get();
@@ -44,15 +47,16 @@ public class BookLendingServiceImpl implements BookLendingService {
             return bookLendingRepository.save(bookLending1);
         }
 
-        throw new RuntimeException(); //need to add exception handler
+        throw new BookLended("This Book has already been returned or not been lent yet.");
     }
 
     @Override
-    public List<Book> getBookDetails(int studentId) {
+    public List<Book> getBookDetails(int studentId) throws StudentNotFoundException {
         List<BookLendingEntity> studentbooks=bookLendingRepository.findByStudentIdAndIssued(studentId,true);
         if(!studentbooks.isEmpty()) {
             final String uri = Constants.BookUrl + "/api/books";
 
+            //need to add exception here
             RestTemplate restTemplate = new RestTemplate();
             //assumes an array
             ResponseEntity<List<Book>> response = restTemplate.exchange(
@@ -77,11 +81,11 @@ public class BookLendingServiceImpl implements BookLendingService {
 
             return finallist;
         }
-        throw new RuntimeException();
+        throw new StudentNotFoundException("The student doesn't exist or the student has not borrowed any books");
     }
 
     @Override
-    public List<Student> getStudentDetails(int bookId) {
+    public List<Student> getStudentDetails(int bookId) throws BookNotFoundException {
         List<BookLendingEntity> bookstudents=bookLendingRepository.findByBookCodeAndIssued(bookId, true);
         if(!bookstudents.isEmpty()) {
             final String uri = Constants.StudentUrl + "/api/students";
@@ -110,7 +114,7 @@ public class BookLendingServiceImpl implements BookLendingService {
 
             return finallist;
         }
-        throw new RuntimeException();
+        throw new BookNotFoundException("The Book doesn't exist or no student has borrowed the book");
     }
 
 
