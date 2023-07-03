@@ -36,7 +36,7 @@ public class BookLendingServiceImpl implements BookLendingService {
         }
         bookLending.setIssued(true);
         bookLending.setIssueDate(new Date());
-       return bookLendingRepository.save(bookLending);
+        return bookLendingRepository.save(bookLending);
     }
 
     @Override
