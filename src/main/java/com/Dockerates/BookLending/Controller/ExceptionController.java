@@ -2,10 +2,7 @@ package com.Dockerates.BookLending.Controller;
 
 
 import com.Dockerates.BookLending.Entity.ErrorMessage;
-import com.Dockerates.BookLending.Exception.BookLended;
-import com.Dockerates.BookLending.Exception.BookNotFoundException;
-import com.Dockerates.BookLending.Exception.APIError;
-import com.Dockerates.BookLending.Exception.StudentNotFoundException;
+import com.Dockerates.BookLending.Exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,6 +42,24 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<ErrorMessage> handleSQLIntegrityException(SQLIntegrityConstraintViolationException exception){
         ErrorMessage message=new ErrorMessage(HttpStatus.BAD_REQUEST,"The Student or Book or both don't exist");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(UserDuplicateEmailException.class)
+    public ResponseEntity<ErrorMessage> handleUserDuplicateEmailException(UserDuplicateEmailException exception){
+        ErrorMessage message=new ErrorMessage(HttpStatus.BAD_REQUEST,"A user with given email already exists.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleUserNotFoundException(UserNotFoundException exception){
+        ErrorMessage message=new ErrorMessage(HttpStatus.BAD_REQUEST,"Requested user not found.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(UserWrongPasswordException.class)
+    public ResponseEntity<ErrorMessage> handleUserWrongPasswordException(UserWrongPasswordException exception){
+        ErrorMessage message=new ErrorMessage(HttpStatus.BAD_REQUEST,"Wrong password for this user.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }
