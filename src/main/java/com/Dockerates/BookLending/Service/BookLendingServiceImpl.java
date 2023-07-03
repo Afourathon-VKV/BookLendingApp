@@ -6,6 +6,7 @@ import com.Dockerates.BookLending.Entity.BookLendingEntity;
 import com.Dockerates.BookLending.Entity.Student;
 import com.Dockerates.BookLending.Exception.BookLended;
 import com.Dockerates.BookLending.Exception.BookNotFoundException;
+import com.Dockerates.BookLending.Exception.APIError;
 import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import com.Dockerates.BookLending.Repository.BookLendingRepository;
 
@@ -14,6 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -51,68 +53,85 @@ public class BookLendingServiceImpl implements BookLendingService {
     }
 
     @Override
-    public List<Book> getBookDetails(int studentId) throws StudentNotFoundException {
+    public List<Book> getBookDetails(int studentId) throws StudentNotFoundException, APIError {
         List<BookLendingEntity> studentbooks=bookLendingRepository.findByStudentIdAndIssued(studentId,true);
         if(!studentbooks.isEmpty()) {
-            final String uri = Constants.BookUrl + "/api/books";
-
+            final String uri = Constants.BookUrl+"/api/books";
             //need to add exception here
-            RestTemplate restTemplate = new RestTemplate();
-            //assumes an array
-            ResponseEntity<List<Book>> response = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Book>>() {
-                    });
+            try{
+                RestTemplate restTemplate = new RestTemplate();
+                //assumes an array
+                ResponseEntity<List<Book>> response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Book>>() {
+                        });
 
-            List<Book> objects = response.getBody();
-            ArrayList<Book> finallist = new ArrayList<Book>();
-            for (int i = 0; i < objects.size(); i++) {
-                for (int j = 0; j < studentbooks.size(); j++) {
-                    if (objects.get(i).getId() == studentbooks.get(j).getBookCode()) {
-                        objects.get(i).setBookLendingEntity(studentbooks.get(j));
-                        finallist.add(objects.get(i));
-                        break;
+                List<Book> objects = response.getBody();
+                ArrayList<Book> finallist = new ArrayList<Book>();
+                for (int i = 0; i < objects.size(); i++) {
+                    for (int j = 0; j < studentbooks.size(); j++) {
+                        if (objects.get(i).getId() == studentbooks.get(j).getBookCode()) {
+                            objects.get(i).setBookLendingEntity(studentbooks.get(j));
+                            finallist.add(objects.get(i));
+                            break;
+                        }
+
                     }
-
                 }
+
+                return finallist;
+            }
+            catch (HttpClientErrorException e){
+                throw new APIError(e.getMessage());
+            }
+            catch (IllegalArgumentException e){
+                throw new APIError("URI is not valid");
             }
 
-            return finallist;
         }
         throw new StudentNotFoundException("The student doesn't exist or the student has not borrowed any books");
     }
 
     @Override
-    public List<Student> getStudentDetails(int bookId) throws BookNotFoundException {
+    public List<Student> getStudentDetails(int bookId) throws BookNotFoundException, APIError {
         List<BookLendingEntity> bookstudents=bookLendingRepository.findByBookCodeAndIssued(bookId, true);
         if(!bookstudents.isEmpty()) {
             final String uri = Constants.StudentUrl + "/api/students";
 
-            RestTemplate restTemplate = new RestTemplate();
-            //assumes an array
-            ResponseEntity<List<Student>> response = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Student>>() {
-                    });
+            try{
 
-            List<Student> objects = response.getBody();
-            ArrayList<Student> finallist = new ArrayList<Student>();
-            for (int i = 0; i < objects.size(); i++) {
-                for (int j = 0; j < bookstudents.size(); j++) {
-                    if (objects.get(i).getId() == bookstudents.get(j).getBookCode()) {
-                        objects.get(i).setBookLendingEntity(bookstudents.get(j));
-                        finallist.add(objects.get(i));
-                        break;
+                RestTemplate restTemplate = new RestTemplate();
+                //assumes an array
+                ResponseEntity<List<Student>> response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Student>>() {
+                        });
+
+                List<Student> objects = response.getBody();
+                ArrayList<Student> finallist = new ArrayList<Student>();
+                for (int i = 0; i < objects.size(); i++) {
+                    for (int j = 0; j < bookstudents.size(); j++) {
+                        if (objects.get(i).getId() == bookstudents.get(j).getBookCode()) {
+                            objects.get(i).setBookLendingEntity(bookstudents.get(j));
+                            finallist.add(objects.get(i));
+                            break;
+                        }
+
                     }
-
                 }
-            }
 
-            return finallist;
+                return finallist;
+            }
+            catch (HttpClientErrorException e){
+                throw new APIError(e.getMessage());
+            }
+            catch (IllegalArgumentException e){
+                throw new APIError("URI is not valid");
+            }
         }
         throw new BookNotFoundException("The Book doesn't exist or no student has borrowed the book");
     }

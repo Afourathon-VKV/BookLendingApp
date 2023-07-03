@@ -5,6 +5,7 @@ import com.Dockerates.BookLending.Entity.BookLendingEntity;
 import com.Dockerates.BookLending.Entity.Student;
 import com.Dockerates.BookLending.Exception.BookLended;
 import com.Dockerates.BookLending.Exception.BookNotFoundException;
+import com.Dockerates.BookLending.Exception.APIError;
 import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import com.Dockerates.BookLending.Service.BookLendingService;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,13 @@ public class BookLendingController {
     }
 
     @GetMapping("getBook/{studentId}")
-    public List<Book> getBookDetails(@PathVariable int studentId) throws StudentNotFoundException {
+    public List<Book> getBookDetails(@PathVariable int studentId) throws StudentNotFoundException, APIError {
 
         return this.bookLendingService.getBookDetails(studentId);
     }
 
     @GetMapping("getStudent/{bookId}")
-    public List<Student> getStudentDetails(@PathVariable int bookId) throws BookNotFoundException {
+    public List<Student> getStudentDetails(@PathVariable int bookId) throws BookNotFoundException, APIError {
         return this.bookLendingService.getStudentDetails(bookId);
     }
 }

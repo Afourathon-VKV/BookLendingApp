@@ -4,6 +4,7 @@ package com.Dockerates.BookLending.Controller;
 import com.Dockerates.BookLending.Entity.ErrorMessage;
 import com.Dockerates.BookLending.Exception.BookLended;
 import com.Dockerates.BookLending.Exception.BookNotFoundException;
+import com.Dockerates.BookLending.Exception.APIError;
 import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,12 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorMessage> bookNotFoundException(BookNotFoundException exception){
         ErrorMessage message= new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
+
+    @ExceptionHandler(APIError.class)
+    public ResponseEntity<ErrorMessage> ClientNotFoundException(APIError exception){
+        ErrorMessage message= new ErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
