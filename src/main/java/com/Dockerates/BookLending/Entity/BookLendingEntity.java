@@ -24,11 +24,11 @@ public class BookLendingEntity {
     private int transactionId;
 
     //need to add foreign key dependency
-    @Column(name="studentId" , nullable = false)
-    private int studentId;
+    @Column(name="rollNo" , nullable = false)
+    private String rollNo;
 
     @Column(name="bookCode", nullable = false)
-    private int bookCode;
+    private String bookCode;
 
     //
 

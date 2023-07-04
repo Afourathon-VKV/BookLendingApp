@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface BookLendingRepository extends JpaRepository<BookLendingEntity, Integer> {
     Optional<BookLendingEntity> findByTransactionIdAndIssued(int transactionId, boolean issued);
-    Optional<BookLendingEntity> findByStudentIdAndBookCodeAndIssued(int studentId, int bookCode, boolean issued);
-    List<BookLendingEntity> findByStudentIdAndIssued(int studentId, boolean issued);
-    List<BookLendingEntity> findByBookCodeAndIssued(int bookCode, boolean issued);
+//    Optional<BookLendingEntity> findByStudentIdAndBookCodeAndIssued(int studentId, int bookCode, boolean issued);
+    List<BookLendingEntity> findByRollNoAndIssued(String rollNo, boolean issued);
+    List<BookLendingEntity> findByBookCodeAndIssued(String bookCode, boolean issued);
 }

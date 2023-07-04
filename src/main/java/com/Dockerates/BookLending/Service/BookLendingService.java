@@ -14,7 +14,7 @@ public interface BookLendingService {
     BookLendingEntity LendBook(BookLendingEntity bookLending) throws BookLended;
     BookLendingEntity ReturnBook(int transactionid) throws BookLended;
 
-    List<Book> getBookDetails(int studentId) throws StudentNotFoundException, APIError;
+    List<Book> getBookDetails(String rollNo) throws StudentNotFoundException, APIError;
 
-    List<Student> getStudentDetails(int bookId) throws BookNotFoundException, APIError;
+    List<Student> getStudentDetails(String bookId) throws BookNotFoundException, APIError;
 }

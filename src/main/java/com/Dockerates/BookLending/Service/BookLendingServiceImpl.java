@@ -30,8 +30,8 @@ public class BookLendingServiceImpl implements BookLendingService {
     private final BookLendingRepository bookLendingRepository;
     @Override
     public BookLendingEntity LendBook(BookLendingEntity bookLending) throws BookLended {
-        Optional<BookLendingEntity> bookLending1=bookLendingRepository.findByStudentIdAndBookCodeAndIssued(bookLending.getStudentId(),bookLending.getBookCode(),true);
-        if(bookLending1.isPresent()){
+        List<BookLendingEntity> bookLending1=bookLendingRepository.findByBookCodeAndIssued(bookLending.getBookCode(),true);
+        if(!bookLending1.isEmpty()){
             throw new BookLended("This Book is lent to another student");
         }
         bookLending.setIssued(true);
@@ -53,8 +53,8 @@ public class BookLendingServiceImpl implements BookLendingService {
     }
 
     @Override
-    public List<Book> getBookDetails(int studentId) throws StudentNotFoundException, APIError {
-        List<BookLendingEntity> studentbooks=bookLendingRepository.findByStudentIdAndIssued(studentId,true);
+    public List<Book> getBookDetails(String rollNo) throws StudentNotFoundException, APIError {
+        List<BookLendingEntity> studentbooks=bookLendingRepository.findByRollNoAndIssued(rollNo,true);
         if(!studentbooks.isEmpty()) {
             final String uri = Constants.BookUrl+"/api/books";
             //need to add exception here
@@ -72,7 +72,7 @@ public class BookLendingServiceImpl implements BookLendingService {
                 ArrayList<Book> finallist = new ArrayList<Book>();
                 for (int i = 0; i < objects.size(); i++) {
                     for (int j = 0; j < studentbooks.size(); j++) {
-                        if (objects.get(i).getId() == studentbooks.get(j).getBookCode()) {
+                        if (objects.get(i).getCode().equals(studentbooks.get(j).getBookCode())) {
                             objects.get(i).setBookLendingEntity(studentbooks.get(j));
                             finallist.add(objects.get(i));
                             break;
@@ -95,7 +95,7 @@ public class BookLendingServiceImpl implements BookLendingService {
     }
 
     @Override
-    public List<Student> getStudentDetails(int bookId) throws BookNotFoundException, APIError {
+    public List<Student> getStudentDetails(String bookId) throws BookNotFoundException, APIError {
         List<BookLendingEntity> bookstudents=bookLendingRepository.findByBookCodeAndIssued(bookId, true);
         if(!bookstudents.isEmpty()) {
             final String uri = Constants.StudentUrl + "/api/students";
@@ -115,7 +115,7 @@ public class BookLendingServiceImpl implements BookLendingService {
                 ArrayList<Student> finallist = new ArrayList<Student>();
                 for (int i = 0; i < objects.size(); i++) {
                     for (int j = 0; j < bookstudents.size(); j++) {
-                        if (objects.get(i).getId() == bookstudents.get(j).getBookCode()) {
+                        if (objects.get(i).getRollNo().equals(bookstudents.get(j).getRollNo())) {
                             objects.get(i).setBookLendingEntity(bookstudents.get(j));
                             finallist.add(objects.get(i));
                             break;

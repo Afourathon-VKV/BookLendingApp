@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/booklending")
 public class BookLendingController {
 
     private final BookLendingService bookLendingService;
@@ -29,15 +29,15 @@ public class BookLendingController {
         return bookLendingService.ReturnBook(transactionId);
     }
 
-    @GetMapping("getBook/{studentId}")
-    public List<Book> getBookDetails(@PathVariable int studentId) throws StudentNotFoundException, APIError {
+    @GetMapping("getBook/{rollNo}")
+    public List<Book> getBookDetails(@PathVariable String rollNo) throws StudentNotFoundException, APIError {
 
-        return this.bookLendingService.getBookDetails(studentId);
+        return this.bookLendingService.getBookDetails(rollNo);
     }
 
-    @GetMapping("getStudent/{bookId}")
-    public List<Student> getStudentDetails(@PathVariable int bookId) throws BookNotFoundException, APIError {
-        return this.bookLendingService.getStudentDetails(bookId);
+    @GetMapping("getStudent/{bookCode}")
+    public List<Student> getStudentDetails(@PathVariable String bookCode) throws BookNotFoundException, APIError {
+        return this.bookLendingService.getStudentDetails(bookCode);
     }
 }
 

@@ -30,6 +30,7 @@ public class SecurityConfig {
                                 // list of endpoints that don't need authentication (!TODO)
                                 // any other request must be authenticated
                                 .requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/api/booklending/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // No session - spring will create a new session for each request
