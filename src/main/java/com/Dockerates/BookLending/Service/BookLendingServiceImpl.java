@@ -57,6 +57,7 @@ public class BookLendingServiceImpl implements BookLendingService {
         List<BookLendingEntity> studentbooks=bookLendingRepository.findByRollNoAndIssued(rollNo,true);
         if(!studentbooks.isEmpty()) {
             final String uri = Constants.BookUrl+"/api/books";
+            System.out.println(uri);
             //need to add exception here
             try{
                 RestTemplate restTemplate = new RestTemplate();
@@ -132,6 +133,7 @@ public class BookLendingServiceImpl implements BookLendingService {
             catch (IllegalArgumentException e){
                 throw new APIError("URI is not valid");
             }
+
         }
         throw new BookNotFoundException("The Book doesn't exist or no student has borrowed the book");
     }
