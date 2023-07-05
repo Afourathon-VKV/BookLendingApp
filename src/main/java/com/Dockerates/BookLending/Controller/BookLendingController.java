@@ -70,23 +70,23 @@ public class BookLendingController {
 
 
     @PostMapping("/lendBook")
-    public BookLendingEntity lendBook( @RequestBody BookLendingEntity bookLendingEntity) throws BookLended {
+    public BookLendingEntity lendBook( @RequestBody BookLendingEntity bookLendingEntity) throws BookLended { // This route allows to lend a book to a student
         return bookLendingService.LendBook(bookLendingEntity);
     }
 
     @PostMapping("/returnBook/{transactionId}")
-    public BookLendingEntity returnBook(@PathVariable int transactionId) throws BookLended {
+    public BookLendingEntity returnBook(@PathVariable int transactionId) throws BookLended { // This route allow to return a book with the transaction Id as parameter
         return bookLendingService.ReturnBook(transactionId);
     }
 
     @GetMapping("/getBook/{rollNo}")
-    public List<Book> getBookDetails(@PathVariable String rollNo) throws StudentNotFoundException, APIError {
+    public List<Book> getBookDetails(@PathVariable String rollNo) throws StudentNotFoundException, APIError { //Get all the books a student owns
 
         return this.bookLendingService.getBookDetails(rollNo);
     }
 
     @GetMapping("/getStudent/{bookCode}")
-    public List<Student> getStudentDetails(@PathVariable String bookCode) throws BookNotFoundException, APIError {
+    public List<Student> getStudentDetails(@PathVariable String bookCode) throws BookNotFoundException, APIError { //Get all the students who own a book
         return this.bookLendingService.getStudentDetails(bookCode);
     }
 }

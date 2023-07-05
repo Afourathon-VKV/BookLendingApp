@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class Student { //used when retrieving student from student api
     private int id; // Primary key of the student table to identify students
 
     private String rollNo; // Roll number of the student
@@ -19,7 +19,7 @@ public class Student {
 
     private String email; // Email of the student
 
-    private String phone;
+    private String phone; //phone number of student
 
     private BookLendingEntity bookLendingEntity;
 }

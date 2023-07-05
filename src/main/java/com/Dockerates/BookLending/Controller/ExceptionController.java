@@ -14,7 +14,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 @ControllerAdvice
 @ResponseStatus
-public class ExceptionController extends ResponseEntityExceptionHandler {
+public class ExceptionController extends ResponseEntityExceptionHandler { //Global exception handler that sends a response entity instead long error message
     @ExceptionHandler(BookLended.class)
     public ResponseEntity<ErrorMessage> handleBookAlreadyLendedException(BookLended exception){
         ErrorMessage message=new ErrorMessage(HttpStatus.BAD_REQUEST,exception.getMessage());
