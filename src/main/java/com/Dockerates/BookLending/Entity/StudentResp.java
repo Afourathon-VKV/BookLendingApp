@@ -1,6 +1,5 @@
 package com.Dockerates.BookLending.Entity;
 
-import jakarta.persistence.Entity;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
