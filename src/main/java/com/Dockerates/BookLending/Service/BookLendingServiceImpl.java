@@ -56,7 +56,7 @@ public class BookLendingServiceImpl implements BookLendingService {
     public List<Book> getBookDetails(String rollNo) throws StudentNotFoundException, APIError {
         List<BookLendingEntity> studentbooks=bookLendingRepository.findByRollNoAndIssued(rollNo,true); //get all the books a student owns
         if(!studentbooks.isEmpty()) {
-            final String uri = Constants.BookUrl+"/api/books"; //api call to get all the books
+            final String uri = Constants.BookUrl+"api/books"; //api call to get all the books
             //need to add exception here
             try{
                 RestTemplate restTemplate = new RestTemplate();
@@ -98,7 +98,7 @@ public class BookLendingServiceImpl implements BookLendingService {
     public List<Student> getStudentDetails(String bookId) throws BookNotFoundException, APIError {
         List<BookLendingEntity> bookstudents=bookLendingRepository.findByBookCodeAndIssued(bookId, true); //get all transactions for a given book code and is issued to a student
         if(!bookstudents.isEmpty()) {
-            final String uri = Constants.StudentUrl + "/api/students"; //gets all students
+            final String uri = Constants.StudentUrl + "api/students"; //gets all students
 
             try{
 
