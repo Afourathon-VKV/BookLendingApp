@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Data
-public class BookLendingEntity {
+public class BookLendingEntity { // The tables that stores the history of all transactions where a transaction is lending or returning a book to a student
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +25,15 @@ public class BookLendingEntity {
 
     //need to add foreign key dependency
     @Column(name="rollNo" , nullable = false)
-    private String rollNo;
+    private String rollNo; //rollNo of student
 
     @Column(name="bookCode", nullable = false)
-    private String bookCode;
+    private String bookCode; //bookCode of the book
 
     //
 
     @Column(name = "issued", columnDefinition = "boolean default false")
-    private boolean issued;
+    private boolean issued; //boolean value to check if a book is issued or is available
 
     @Column(name="issueDate")
     private Date issueDate;
