@@ -109,7 +109,7 @@ public class BookLendingController {
     }
 
     @PostMapping("/books")
-    public Mono<BookResp> addBook(Object request) {
+    public Mono<BookResp> addBook(@RequestBody BookResp request) {
         Mono<BookResp> respMono = this.bookWebClient.getWebClient().post().uri(Constants.BookUrl + "api/books").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
                         return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
@@ -135,7 +135,7 @@ public class BookLendingController {
     }
 
     @PutMapping("/books")
-    public Mono<BookResp> updateBook(Object request) {
+    public Mono<BookResp> updateBook(@RequestBody BookResp request) {
         Mono<BookResp> respMono = this.bookWebClient.getWebClient().put().uri(Constants.BookUrl + "api/books").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
                         return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
