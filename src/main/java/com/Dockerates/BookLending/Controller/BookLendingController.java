@@ -15,9 +15,11 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,6 +58,38 @@ public class BookLendingController {
                     }
                 })
                 .bodyToMono(BookResp.class);
+
+        return respMono;
+    }
+
+    @GetMapping("/students")
+    public Flux<Map> getAllStudents() {
+        Flux<Map> respMono = this.studentWebClient.getWebClient().get().uri(Constants.StudentUrl + "api/students").retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    if (clientResponse.statusCode() == HttpStatus.NOT_FOUND) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "A student with that roll number does not exist"));
+                    } else if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
+                    } else {
+                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
+                    }
+                })
+                .bodyToFlux(Map.class);
+
+        return respMono;
+    }
+
+    @GetMapping("/books")
+    public Flux<Map> getAllBooks() {
+        Flux<Map> respMono = this.bookWebClient.getWebClient().get().uri(Constants.BookUrl + "api/books").retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    if (clientResponse.statusCode() == HttpStatus.NOT_FOUND) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "A book with that code does not exist"));
+                    } else if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
+                    } else {
+                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
+                    }
+                })
+                .bodyToFlux(Map.class);
 
         return respMono;
     }
