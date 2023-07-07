@@ -13,6 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -115,12 +116,10 @@ public class BookLendingController {
     public ResponseEntity<StudentResp> addStudent(@RequestBody StudentResp request) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.StudentUrl + "api/students",
-                HttpMethod.POST,
-                null,
-                new ParameterizedTypeReference<StudentResp>() {
-                });
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<StudentResp> response = restTemplate.postForEntity(Constants.StudentUrl + "api/students", entity, StudentResp.class);
         if(response.getStatusCode().is4xxClientError()){
             if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 throw new RuntimeException("Bad request");
@@ -136,12 +135,10 @@ public class BookLendingController {
     public ResponseEntity<BookResp> addBook(@RequestBody BookResp request) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.BookUrl + "api/books",
-                HttpMethod.POST,
-                null,
-                new ParameterizedTypeReference<BookResp>() {
-                });
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<BookResp> response = restTemplate.postForEntity(Constants.BookUrl + "api/books", entity, BookResp.class);
         if(response.getStatusCode().is4xxClientError()){
             if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 throw new RuntimeException("Bad request");
@@ -154,86 +151,64 @@ public class BookLendingController {
 
 
     @PutMapping("/students")
-    public ResponseEntity<StudentResp> updateStudent(@RequestBody StudentResp request) {
+    public String updateStudent(@RequestBody StudentResp request) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.StudentUrl + "api/students",
-                HttpMethod.PUT,
-                null,
-                new ParameterizedTypeReference<StudentResp>() {
-                });
-        if(response.getStatusCode().is4xxClientError()){
-            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Bad request");
-            } else {
-                throw new RuntimeException("Client error");
-            }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+        try{
+            restTemplate.put(Constants.StudentUrl + "api/students", entity);
         }
-        return response;
+        catch (RestClientException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return "Success!";
     }
 
 
     @PutMapping("/books")
-    public ResponseEntity<BookResp> updateBook(@RequestBody BookResp request) {
+    public String updateBook(@RequestBody BookResp request) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.BookUrl + "api/books",
-                HttpMethod.PUT,
-                null,
-                new ParameterizedTypeReference<BookResp>() {
-                });
-        if(response.getStatusCode().is4xxClientError()){
-            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Bad request");
-            } else {
-                throw new RuntimeException("Client error");
-            }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+        try{
+            restTemplate.put(Constants.BookUrl + "api/books", entity);
         }
-        return response;
+        catch (RestClientException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return "Success!";
     }
 
 
     @DeleteMapping("/students/RollNo/{rollNo}")
-    public ResponseEntity<StudentResp> deleteStudentByRollNo(@PathVariable String rollNo) {
+    public String deleteStudentByRollNo(@PathVariable String rollNo) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.StudentUrl + "api/students/rollNo/" + rollNo,
-                HttpMethod.DELETE,
-                null,
-                new ParameterizedTypeReference<StudentResp>() {
-                });
-        if(response.getStatusCode().is4xxClientError()){
-            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Bad request");
-            } else {
-                throw new RuntimeException("Client error");
-            }
+        try{
+            restTemplate.delete(Constants.StudentUrl + "api/students/rollNo/" + rollNo);
         }
-        return response;
+        catch (RestClientException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return "Success!";
     }
 
 
     @DeleteMapping("/books/code/{book_code}")
-    public ResponseEntity<BookResp> deleteBookByCode(@PathVariable String book_code) {
+    public String deleteBookByCode(@PathVariable String book_code) {
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
-                Constants.BookUrl + "api/books/code/" + book_code,
-                HttpMethod.DELETE,
-                null,
-                new ParameterizedTypeReference<BookResp>() {
-                });
-        if(response.getStatusCode().is4xxClientError()){
-            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Bad request");
-            } else {
-                throw new RuntimeException("Client error");
-            }
+        try{
+            restTemplate.delete(Constants.BookUrl + "api/books/code/" + book_code);
         }
-        return response;
+        catch (RestClientException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        return "Success!";
     }
 
 

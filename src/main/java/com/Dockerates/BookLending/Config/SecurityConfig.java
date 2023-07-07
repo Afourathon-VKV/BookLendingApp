@@ -28,7 +28,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/users/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                                .requestMatchers("/api/booklending/**").hasAnyAuthority("ADMIN", "LIBRARIAN")
+                                .requestMatchers("/api/booklending/**").hasAnyRole("ADMIN", "LIBRARIAN")
                 )
                 // No session - spring will create a new session for each request
                 .sessionManagement(session ->
