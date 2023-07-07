@@ -19,6 +19,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signup(@RequestBody User user) throws UserDuplicateEmailException {
+        System.out.println("dddd" + user.getRole());
         return userService.signup(user);
     }
 

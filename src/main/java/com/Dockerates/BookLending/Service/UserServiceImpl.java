@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(encodedPassword)
-                .role(Role.LIBRARIAN)   // Default role is LIBRARIAN.
+                .role(user.getRole())
                 .build();
         try {
             userRepository.save(newUser);

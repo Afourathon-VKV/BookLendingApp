@@ -91,4 +91,12 @@ public class JwtService {
         }
         return jwt;
     }
+
+    public String getJwtFromHeader(HttpServletRequest request) {
+        String jwt = null;
+        if (request.getHeader("Authorization") != null) {
+            jwt = request.getHeader("Authorization");
+        }
+        return jwt;
+    }
 }

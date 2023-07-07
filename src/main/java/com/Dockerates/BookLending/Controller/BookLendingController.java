@@ -2,20 +2,18 @@ package com.Dockerates.BookLending.Controller;
 
 import com.Dockerates.BookLending.Constants;
 import com.Dockerates.BookLending.Entity.*;
-import com.Dockerates.BookLending.Exception.BookLended;
-import com.Dockerates.BookLending.Exception.BookNotFoundException;
-import com.Dockerates.BookLending.Exception.APIError;
-import com.Dockerates.BookLending.Exception.StudentNotFoundException;
+import com.Dockerates.BookLending.Exception.*;
 import com.Dockerates.BookLending.Service.BookLendingService;
 import com.Dockerates.BookLending.Service.BookWebClient;
 import com.Dockerates.BookLending.Service.StudentWebClient;
 import com.Dockerates.BookLending.Service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,39 +30,53 @@ public class BookLendingController {
     private final BookLendingService bookLendingService;
     private final StudentWebClient studentWebClient;
     private final BookWebClient bookWebClient;
-    
+
 
     @GetMapping("/students/rollNo/{rollNo}")
-    public Mono<StudentResp> getStudentByRollNo(@PathVariable String rollNo) {
-        Mono<StudentResp> respMono = this.studentWebClient.getWebClient().get().uri(Constants.StudentUrl + "api/students/rollNo/" + rollNo).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.NOT_FOUND) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "A student with that roll number does not exist"));
-                    } else if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(StudentResp.class);
+    public ResponseEntity<StudentResp> getStudentByRollNo(@PathVariable String rollNo) throws StudentNotFoundException {
+        RestTemplate restTemplate = new RestTemplate();
 
-        return respMono;
+        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.StudentUrl + "api/students/rollNo/" + rollNo,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<StudentResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new StudentNotFoundException("A student with this roll number does not exist");
+            } else if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @GetMapping("/books/code/{book_code}")
-    public Mono<BookResp> getBookByCode(@PathVariable String book_code) {
-        Mono<BookResp> respMono = this.bookWebClient.getWebClient().get().uri(Constants.BookUrl + "api/books/code/" + book_code).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.NOT_FOUND) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "A book with that code does not exist"));
-                    } else if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(BookResp.class);
+    public ResponseEntity<BookResp> getBookByCode(@PathVariable String book_code) throws BookNotFoundException {
+        RestTemplate restTemplate = new RestTemplate();
 
-        return respMono;
+        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.BookUrl + "api/books/code/" + book_code,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<BookResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new BookNotFoundException("A book with this code does not exist");
+            } else if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @GetMapping("/students")
     public Flux<Map> getAllStudents() {
@@ -81,6 +93,7 @@ public class BookLendingController {
 
         return respMono;
     }
+
 
     @GetMapping("/books")
     public Flux<Map> getAllBooks() {
@@ -99,82 +112,128 @@ public class BookLendingController {
     }
 
     @PostMapping("/students")
-    public Mono<StudentResp> addStudent(@RequestBody StudentResp request) {
-        Mono<StudentResp> respMono = this.studentWebClient.getWebClient().post().uri(Constants.StudentUrl + "api/students").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(StudentResp.class);
+    public ResponseEntity<StudentResp> addStudent(@RequestBody StudentResp request) {
+        RestTemplate restTemplate = new RestTemplate();
 
-        return respMono;
+        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.StudentUrl + "api/students",
+                HttpMethod.POST,
+                null,
+                new ParameterizedTypeReference<StudentResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @PostMapping("/books")
-    public Mono<BookResp> addBook(@RequestBody BookResp request) {
-        Mono<BookResp> respMono = this.bookWebClient.getWebClient().post().uri(Constants.BookUrl + "api/books").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(BookResp.class);
-        return respMono;
+    public ResponseEntity<BookResp> addBook(@RequestBody BookResp request) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.BookUrl + "api/books",
+                HttpMethod.POST,
+                null,
+                new ParameterizedTypeReference<BookResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @PutMapping("/students")
-    public Mono<StudentResp> updateStudent(@RequestBody StudentResp request) {
-        Mono<StudentResp> respMono = this.studentWebClient.getWebClient().put().uri(Constants.StudentUrl + "api/students").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(StudentResp.class);
-        return respMono;
+    public ResponseEntity<StudentResp> updateStudent(@RequestBody StudentResp request) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.StudentUrl + "api/students",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<StudentResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @PutMapping("/books")
-    public Mono<BookResp> updateBook(@RequestBody BookResp request) {
-        Mono<BookResp> respMono = this.bookWebClient.getWebClient().put().uri(Constants.BookUrl + "api/books").contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(BookResp.class);
-        return respMono;
+    public ResponseEntity<BookResp> updateBook(@RequestBody BookResp request) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.BookUrl + "api/books",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<BookResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
+
 
     @DeleteMapping("/students/RollNo/{rollNo}")
-    public Mono<String> deleteStudentByRollNo(@PathVariable String rollNo) {
-        Mono<String> respMono = this.studentWebClient.getWebClient().delete().uri(Constants.StudentUrl + "api/students/rollNo/" + rollNo).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(String.class);
-        return respMono;
+    public ResponseEntity<StudentResp> deleteStudentByRollNo(@PathVariable String rollNo) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<StudentResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.StudentUrl + "api/students/rollNo/" + rollNo,
+                HttpMethod.DELETE,
+                null,
+                new ParameterizedTypeReference<StudentResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
 
+
     @DeleteMapping("/books/code/{book_code}")
-    public Mono<String> deleteBookByCode(@PathVariable String book_code) {
-        Mono<String> respMono = this.bookWebClient.getWebClient().delete().uri(Constants.BookUrl + "api/books/code/" + book_code).retrieve().onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.BAD_REQUEST) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request"));
-                    } else {
-                        return Mono.error(new ResponseStatusException(clientResponse.statusCode(), "Client error"));
-                    }
-                })
-                .bodyToMono(String.class);
-        return respMono;
+    public ResponseEntity<BookResp> deleteBookByCode(@PathVariable String book_code) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<BookResp> response = restTemplate.exchange( //makes a get request to the api to retrieve all the books
+                Constants.BookUrl + "api/books/code/" + book_code,
+                HttpMethod.DELETE,
+                null,
+                new ParameterizedTypeReference<BookResp>() {
+                });
+        if(response.getStatusCode().is4xxClientError()){
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Bad request");
+            } else {
+                throw new RuntimeException("Client error");
+            }
+        }
+        return response;
     }
 
 

@@ -3,6 +3,7 @@ package com.Dockerates.BookLending.Config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,12 +27,7 @@ public class SecurityConfig {
                 // Todo: enable csrf
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth
-                                // list of endpoints that don't need authentication (!TODO)
-                                // any other request must be authenticated
-                                .requestMatchers("/api/users/**").permitAll()
-                                .requestMatchers("/api/booklending/**").permitAll()
-                                .requestMatchers("/api/admin/**").permitAll()
+                        auth.requestMatchers("/api/users/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // No session - spring will create a new session for each request
