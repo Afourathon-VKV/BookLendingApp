@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 // any other request must be authenticated
                                 .requestMatchers("/api/users/**").permitAll()
                                 .requestMatchers("/api/booklending/**").permitAll()
+                                .requestMatchers("/api/admin/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // No session - spring will create a new session for each request

@@ -52,6 +52,7 @@ public class ApplicationConfig {
     @Bean
     public BookWebClient BookWebClientProvider() {
         BookWebClient bookWebClient = new BookWebClient();
+
         return bookWebClient;
     }
 
@@ -60,4 +61,5 @@ public class ApplicationConfig {
         StudentWebClient studentWebClient = new StudentWebClient();
         return studentWebClient;
     }
+
 }

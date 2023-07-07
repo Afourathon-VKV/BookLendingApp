@@ -9,6 +9,8 @@ import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import com.Dockerates.BookLending.Service.BookLendingService;
 import com.Dockerates.BookLending.Service.BookWebClient;
 import com.Dockerates.BookLending.Service.StudentWebClient;
+import com.Dockerates.BookLending.Service.UserService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,12 +25,14 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/booklending")
 public class BookLendingController {
 
     private final BookLendingService bookLendingService;
     private final StudentWebClient studentWebClient;
     private final BookWebClient bookWebClient;
+    
 
     @GetMapping("/students/rollNo/{rollNo}")
     public Mono<StudentResp> getStudentByRollNo(@PathVariable String rollNo) {
@@ -194,5 +198,6 @@ public class BookLendingController {
     public List<Student> getStudentDetails(@PathVariable String bookCode) throws BookNotFoundException, APIError {
         return this.bookLendingService.getStudentDetails(bookCode);
     }
+
 }
 

@@ -91,6 +91,7 @@ public class BookLendingServiceImpl implements BookLendingService {
             }
 
         }
+    
         throw new StudentNotFoundException("The student doesn't exist or the student has not borrowed any books");
     }
 
