@@ -49,7 +49,7 @@ class UserServiceImplTest {
     @Test
     void signup_Successful() throws UserDuplicateEmailException {
         // Arrange
-        User user = new User("1","john", "password", "john@example.com", Role.LIBRARIAN);
+        User user = new User("1","john","john", "password", "john@example.com", Role.LIBRARIAN);
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
         when(userRepository.save(any())).thenReturn(user);
 
@@ -66,7 +66,7 @@ class UserServiceImplTest {
     @Test
     void signup_DuplicateEmail_ExceptionThrown() {
         // Arrange
-        User user = new User("1","john", "password", "john@example.com", Role.LIBRARIAN);
+        User user = new User("1","john","john", "password", "john@example.com", Role.LIBRARIAN);
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
         when(userRepository.save(any())).thenThrow(DataIntegrityViolationException.class);
 
@@ -77,7 +77,7 @@ class UserServiceImplTest {
     @Test
     void login_Successful() throws UserNotFoundException, UserWrongPasswordException {
         // Arrange
-        User user = new User("1","john", "password", "john@example.com", Role.LIBRARIAN);
+        User user = new User("1","john","john", "password", "john@example.com", Role.LIBRARIAN);
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
         when(authenticationManager.authenticate(any())).thenReturn(null);
         when(jwtService.generateToken(user)).thenReturn("token");
@@ -95,7 +95,7 @@ class UserServiceImplTest {
     @Test
     void login_UserNotFound_ExceptionThrown() {
         // Arrange
-        User user = new User("1","john", "password", "john@example.com", Role.LIBRARIAN);
+        User user = new User("1","john", "john", "password", "john@example.com", Role.LIBRARIAN);
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -106,7 +106,7 @@ class UserServiceImplTest {
     void login_WrongPassword_ExceptionThrown() {
 
         // Arrange
-        User user = new User("1","john", "password", "john@example.com", Role.LIBRARIAN);
+        User user = new User("1","john", "john", "password", "john@example.com", Role.LIBRARIAN);
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
         when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
 

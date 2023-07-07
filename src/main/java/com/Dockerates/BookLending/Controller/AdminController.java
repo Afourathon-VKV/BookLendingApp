@@ -31,8 +31,8 @@ public class AdminController {
     }
 
     @Transactional
-    @DeleteMapping("/deleteLibrarian")
-    public String deleteLibrarian(@RequestParam(name = "email") String email) throws UserNotFoundException {
+    @DeleteMapping("/deleteLibrarian/{email}")
+    public String deleteLibrarian(@PathVariable String email) throws UserNotFoundException {
         return this.userService.deleteLibrarian(email);
     }
 }

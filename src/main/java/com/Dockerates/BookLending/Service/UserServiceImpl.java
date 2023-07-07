@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
                 .role(Role.LIBRARIAN)   // Default role is LIBRARIAN.
                 .build();
         try {
+            newUser.setName(user.getName());
             userRepository.save(newUser);
         } catch (DataIntegrityViolationException e) {
             throw new UserDuplicateEmailException("Email already exists");

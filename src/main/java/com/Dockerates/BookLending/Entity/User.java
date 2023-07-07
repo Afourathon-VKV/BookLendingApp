@@ -23,6 +23,10 @@ public class User implements UserDetails {
     private String id;  // UUID
     @Column(unique = true)
     private String username;
+
+    @Column(unique=true)
+    private String name;
+
     private String password;
     @Column(unique = true)
     private String email;
