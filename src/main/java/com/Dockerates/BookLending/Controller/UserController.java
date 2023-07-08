@@ -28,11 +28,12 @@ public class UserController {
         String token = userService.login(user);
         if (token != null) {
             Number maxAge = 1000 * 60 * 60 * 10; // 10 hour
-            Cookie cookie = new Cookie("jwt", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(maxAge.intValue());
-            response.addCookie(cookie);
+            // Cookie cookie = new Cookie("jwt", token);
+            // cookie.setHttpOnly(true);
+            // cookie.setPath("/");
+            // cookie.setMaxAge(maxAge.intValue());
+            // response.addCookie(cookie);
+            response.setHeader("Set-Cookie", "jwt="+ token+"; HttpOnly; SameSite=none; Secure; Path=/; Max-Age="+maxAge.toString());
         }
         return token;
     }
