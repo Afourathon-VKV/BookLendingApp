@@ -11,6 +11,8 @@ import com.Dockerates.BookLending.Exception.StudentNotFoundException;
 import com.Dockerates.BookLending.Repository.BookLendingRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +30,17 @@ import java.util.Optional;
 public class BookLendingServiceImpl implements BookLendingService {
 
     private final BookLendingRepository bookLendingRepository;
+    private final Logger logger = LoggerFactory.getLogger(BookLendingServiceImpl.class);
     @Override
     public BookLendingEntity LendBook(BookLendingEntity bookLending) throws BookLended {
         List<BookLendingEntity> bookLending1=bookLendingRepository.findByBookCodeAndIssued(bookLending.getBookCode(),true); //checks if a book is issued
         if(!bookLending1.isEmpty()){
+            logger.error(String.format("Could not lend book of code %s as it was already lent to another student.",bookLending.getBookCode()));
             throw new BookLended("This Book is lent to another student");
         }
         bookLending.setIssued(true);
         bookLending.setIssueDate(new Date());
+        logger.info(String.format("Lent book of code %s to student of roll number %s.",bookLending.getBookCode(),bookLending.getRollNo()));
         return bookLendingRepository.save(bookLending); //add a new transaction where the book is lent to a student
     }
 
@@ -46,9 +51,10 @@ public class BookLendingServiceImpl implements BookLendingService {
             BookLendingEntity bookLending1=bookLending.get(); //on returning the issued flag is set to false indicating that the book is available to be lent
             bookLending1.setIssued(false);
             bookLending1.setReturnDate(new Date());
+            logger.info(String.format("Returned book of code %s.",bookLending.get().getBookCode()));
             return bookLendingRepository.save(bookLending1); //updates a given transaction
         }
-
+        logger.error("Could Not Return Book");
         throw new BookLended("This Book has already been returned or not been lent yet.");
     }
 
@@ -80,10 +86,11 @@ public class BookLendingServiceImpl implements BookLendingService {
 
                     }
                 }
-
+                logger.info(String.format("Returned all books borrowed by student of roll number %s",rollNo));
                 return finallist;
             }
             catch (HttpClientErrorException e){
+                logger.error("External Book API did not return.");
                 throw new APIError(e.getMessage());
             }
             catch (IllegalArgumentException e){
@@ -91,7 +98,7 @@ public class BookLendingServiceImpl implements BookLendingService {
             }
 
         }
-    
+        logger.info(String.format("Student with roll number %s does not exist or has not borrowed any books",rollNo));
         throw new StudentNotFoundException("The student doesn't exist or the student has not borrowed any books");
     }
 
@@ -124,10 +131,11 @@ public class BookLendingServiceImpl implements BookLendingService {
 
                     }
                 }
-
+                logger.info(String.format("Returned Student Info that borrowed book of code %s",bookId));
                 return finallist;
             }
             catch (HttpClientErrorException e){
+                logger.error("External Student API did not return.");
                 throw new APIError(e.getMessage());
             }
             catch (IllegalArgumentException e){
@@ -135,6 +143,7 @@ public class BookLendingServiceImpl implements BookLendingService {
             }
 
         }
+        logger.info(String.format("Book with code %s does not exist or has not been borrowed by a student",bookId));
         throw new BookNotFoundException("The Book doesn't exist or no student has borrowed the book");
     }
 
