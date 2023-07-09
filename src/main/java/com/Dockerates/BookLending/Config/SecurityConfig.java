@@ -34,6 +34,8 @@ public class SecurityConfig {
                         auth.requestMatchers("/api/users/**").permitAll()
                                 .requestMatchers("/api/booklending/**").permitAll()
                                 .requestMatchers("/api/admin/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
                 )
                 // No session - spring will create a new session for each request
                 .sessionManagement(session ->

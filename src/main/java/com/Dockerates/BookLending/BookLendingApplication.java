@@ -18,7 +18,7 @@ public class BookLendingApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api/**").allowedOrigins("http://localhost:5173")
+				registry.addMapping("/**").allowedOrigins("http://localhost:5173")
 				.allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
 				.allowCredentials(true);
 			}
