@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
@@ -28,12 +27,13 @@ public class UserController {
         String token = userService.login(user);
         if (token != null) {
             Number maxAge = 1000 * 60 * 60 * 10; // 10 hour
-            // Cookie cookie = new Cookie("jwt", token);
-            // cookie.setHttpOnly(true);
-            // cookie.setPath("/");
-            // cookie.setMaxAge(maxAge.intValue());
-            // response.addCookie(cookie);
-            response.setHeader("Set-Cookie", "jwt="+ token+"; HttpOnly; SameSite=none; Secure; Path=/; Max-Age="+maxAge.toString());
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(maxAge.intValue());
+            response.addCookie(cookie);
+            // response.setHeader("Set-Cookie", "jwt="+ token+"; HttpOnly; SameSite=None; Secure; Path=/; Max-Age="+maxAge.toString());
         }
         return token;
     }

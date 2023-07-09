@@ -7,15 +7,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import com.Dockerates.BookLending.Entity.Role;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         System.out.println("Inside JwtAuthFilter");
         String jwtFromCookie = jwtService.getJwtFromCookie(request);
-        if (jwtFromCookie != null) {
+        if (jwtFromCookie != null && !jwtFromCookie.equals("null")) {
             System.out.println("jwtFromCookie: " + jwtFromCookie);
             String userEmailFromCookie = jwtService.extractUserEmail(jwtFromCookie);
             System.out.println(userEmailFromCookie);
@@ -49,12 +53,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                     );
                     System.out.println(userDetails.getAuthorities());
+
+                    //Checking authorization
+                    List<GrantedAuthority> listAuthorities = new ArrayList<GrantedAuthority>();
+                    listAuthorities.addAll(userDetails.getAuthorities());
+                    List<String> roles=new ArrayList<>(0);
+                    for(int i=0;i<listAuthorities.size();i++){
+                        roles.add(listAuthorities.get(i).toString());
+                    }
+                    if(request.getRequestURI().contains("/api/admin") && !roles.contains("ADMIN") ){
+                        throw new RuntimeException("Librarian can't access this site");
+                    }
+
                     System.out.println(authToken);
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         }
+        System.out.println("Request Method:" + request.getMethod());
         System.out.println("URL hit at: " + request.getRequestURI());
         filterChain.doFilter(request, response);
     }

@@ -24,7 +24,6 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/booklending")
 public class BookLendingController {
 
@@ -217,7 +216,7 @@ public class BookLendingController {
         return bookLendingService.LendBook(bookLendingEntity);
     }
 
-    @PostMapping("/returnBook/{transactionId}")     // This route allow to return a book with the transaction Id as parameter
+    @PutMapping("/returnBook/{transactionId}")     // This route allow to return a book with the transaction Id as parameter
     public BookLendingEntity returnBook(@PathVariable int transactionId) throws BookLended {
         return bookLendingService.ReturnBook(transactionId);
     }

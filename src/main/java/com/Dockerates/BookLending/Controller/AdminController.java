@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/admin")
 public class AdminController {
     private final UserService userService;

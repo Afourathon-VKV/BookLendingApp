@@ -1,6 +1,8 @@
 package com.Dockerates.BookLending.Config;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
+    private final CheckTokenFilter checkTokenFilter;
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
@@ -28,10 +32,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/users/**").permitAll()
-                                .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
-                                .requestMatchers("/api/booklending/**").hasAnyAuthority("ADMIN", "LIBRARIAN")
-                                .requestMatchers("/api/booklending/**").hasAnyRole("ADMIN", "LIBRARIAN")
+                                .requestMatchers("/api/booklending/**").permitAll()
+                                .requestMatchers("/api/admin/**").permitAll()
                 )
                 // No session - spring will create a new session for each request
                 .sessionManagement(session ->
@@ -41,7 +43,9 @@ public class SecurityConfig {
                 // Custom authentication provider
                 .authenticationProvider(authenticationProvider)
                 // Custom jwtAuthFilter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(checkTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                
         return httpSecurity.build();
     }
 }
