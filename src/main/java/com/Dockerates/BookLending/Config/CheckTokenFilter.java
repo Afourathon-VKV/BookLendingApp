@@ -27,7 +27,7 @@ public class CheckTokenFilter extends OncePerRequestFilter {
         System.out.println("Inside checkTokenFilter");
         String jwtFromCookie = jwtService.getJwtFromCookie(request);
         if (jwtFromCookie == null || jwtFromCookie.equals("null")) {
-            if(request.getMethod().equals("OPTIONS")){
+            if(request.getMethod().equals("OPTIONS") || request.getRequestURI().contains("/v3/api-docs") || request.getRequestURI().contains("swagger-ui")){
                 ;
             }
             else if(!request.getRequestURI().contains("/api/users")) throw new RuntimeException("Not authorized");
