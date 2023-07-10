@@ -18,7 +18,7 @@ public class BookLendingApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://localhost:5173")
+				registry.addMapping("/**").allowedOrigins("http://localhost:5173", "https://library-frontend-9qlzt0p0s-dockerates.vercel.app/")
 				.allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
 				.allowCredentials(true);
 			}
