@@ -88,3 +88,16 @@
 - The Testing is performed in the following way (using JUnit to automate the tests):
     - Create unit test cases for the bookLendingEntity method in the repo layer. These tests use the in memory H2 Database to avoid affecting the actual production database. They test the different lending and returning functionalities.
     - Create unit test cases for each method in the service layer. Mock the repo layer (using Mockito) to isolate the business logic. Test different user and book Lending scenarios and edge cases to validate the business rules.
+ 
+
+### Deployment 
+
+- We used various AWS services to deploy the application. Firstly, we created an AWS that contained multiple EC2 instances to run the docker image. A repository was created for this repo to store the images that are built by the CI/CD process using the ECR service. Then a task-definition was made which had information to run the image. In the cluster, we created a service which would make use of the task definition built and run the container on one of the EC2 instances.
+- We used the RDS database for storing data, the endpoint and password of the database is added github secrets along with the access key id and secret access key.
+- We used the CI/CD infrasture that github provides to create a workflow file which contained instructions to deploy the application on aws.
+- Added the task-definition.json file that we got in the previous step to the root of the repo.
+- Configured the aws.yml file with cluster name, service name, region ,repository and the location of the task-definition file.
+- A Dockerfile was added ot the root of the repo. The Dockerfile contains commands to setup , test and build the image that will be run on the EC2 instance. The instance will run only if the command running tests passes.
+- Once deployed, the ip address of the app is visible on the task that is running the app.
+Push all the changes to github using git. Once pushed, github will take care of deploying to aws.
+
