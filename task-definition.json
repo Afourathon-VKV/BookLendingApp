@@ -5,7 +5,15 @@
     {
       "dnsSearchDomains": null,
       "environmentFiles": null,
-      "logConfiguration": null,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+          "awslogs-group": "/ecs/BookLending_App",
+          "awslogs-region": "ap-south-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
       "entryPoint": [],
       "portMappings": [
         {
@@ -29,7 +37,7 @@
       "memoryReservation": 512,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "760022656493.dkr.ecr.ap-south-1.amazonaws.com/booklendingapp:9398a45de5640d75a176a638c0e3b274c34a16be",
+      "image": "760022656493.dkr.ecr.ap-south-1.amazonaws.com/booklendingapp:cd5799cdd2f5026c868b7883bba4d2422672ebec",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -56,14 +64,32 @@
     "EXTERNAL",
     "EC2"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:ap-south-1:760022656493:task-definition/BookLending_App:26",
+  "taskDefinitionArn": "arn:aws:ecs:ap-south-1:760022656493:task-definition/BookLending_App:37",
   "family": "BookLending_App",
   "requiresAttributes": [
     {
       "targetId": null,
       "targetType": null,
       "value": null,
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
       "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
     },
     {
       "targetId": null,
@@ -91,7 +117,7 @@
   "networkMode": "bridge",
   "runtimePlatform": null,
   "cpu": null,
-  "revision": 26,
+  "revision": 37,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
