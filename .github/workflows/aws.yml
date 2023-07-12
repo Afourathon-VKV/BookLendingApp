@@ -63,7 +63,6 @@ jobs:
 
       - name: Adding application.properties file
         run: |
-          mkdir src/main/resources
           touch src/main/resources/application.properties
 
       - name: Adding content to application.properties file
