@@ -23,14 +23,19 @@
 - The following are the API endpoints for all user authentication and authorization (Admin and Librarian).
   | Method | Endpoint | Description |
   |--------|----------|--------------|
-  |GET |/api/admin/getLibrarian |  |
-  |POST| /api/admin/addLibrarian | |
-  |DELETE |/api/admin/deleteLibrarian/{email} | | 
-  |POST| /api/users/signup | |
-  |POST |/api/users/login | |  
-  |GET |/api/users/logout | | 
+  |GET |/api/admin/getLibrarian | Returns a list of librarians, i.e users with the role LIBRARIAN. Only a user with ADMIN role can access this route. |
+  |POST| /api/admin/addLibrarian | Adds a librarian, i.e a user with the role LIBRARIAN. Only a user with ADMIN role can access this route.|
+  |DELETE |/api/admin/deleteLibrarian/{email} | Deletes the librarian with the given email id. Only a user with ADMIN role can access this route.| 
+  |POST| /api/users/signup | This route allows to add a user. Everyone has access to this route.|
+  |POST |/api/users/login | This route is used to verify the credentials of an user. Return a jwt token which the user can use to access the remaining endpoints. Everyone has access to this route.|  
+  |GET |/api/users/logout | Logs out the user. Everyone has access to this route.| 
 
 ### Auth Project Structure
+- To implement authentication, the project uses spring security maven dependency to authenticate and authorize users. When a request is received by the backend, before executing the service code of the route, the auth layer catches the request, and then using the jwt token, i.e if sent to get the user credentials.
+- Once the credentials are obtained, if they are not valid, then an error is returned, else the role of the user is checked. This is implements using separate filters, where the first filter checks for the validity of the user and the second checks the role.
+- The role used to verify if the user has authorization to access a route.
+- The above is implemented in a config directory where the securityconfig file contains all the filters needed to verify a user and the filters are implemented in the same directory.
+- A JWtservice class is used in the filters to execute the funtionalities described above. This class allows to generate a jwt token when a user logs in and also has funtions to get the credentials of the user.
 
 ### Student Endpoints
 
