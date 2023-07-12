@@ -61,13 +61,18 @@ jobs:
           unset AWS_SECRET_ACCESS_KEY
           unset AWS_SESSION_TOKEN
 
-      # - name: Adding secret
-      #   run: |
-      #     echo  spring.datasource.password = "$DEV_PROP_FILE" >> src/main/resources/application.properties
-      #     cat src/main/resources/application.properties
-      #   shell: bash
-      #   env:
-      #     DEV_PROP_FILE: ${{secrets.RDSPASSWORD}}
+      - name: Adding application.properties file
+        run: |
+          mkdir src/main/resources
+          touch src/main/resources/application.properties
+
+      - name: Adding content to application.properties file
+        run: |
+          echo -e "spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect\nspring.jpa.generate-ddl=true\nspring.jpa.hibernate.ddl-auto=update\nlogging.level.org.hibernate.SQL=DEBUG\nlogging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE\nspring.datasource.url=jdbc:mysql://testdb.cexyawksi36z.ap-south-1.rds.amazonaws.com:3306/student_directory\nspring.datasource.username=admin\nspring.datasource.password=$DEV_PROP_FILE" > src/main/resources/application.properties
+          cat src/main/resources/application.properties
+        shell: bash
+        env:
+          DEV_PROP_FILE: ${{secrets.RDSPASSWORD}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
