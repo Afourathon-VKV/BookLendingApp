@@ -60,8 +60,6 @@
   |PUT| /api/booklending/books | Takes a book object in the body of the request and updates the book in the DB that corresponds to the code of the book in the request body to the book in the request body.|
   |DELETE |/api/booklending/books/code/{code} | Deletes the book that corresponds the code in the path variable from the DB.|
 
-### Book and Student Endpoints Project Structure
-
 ### Book Lending Endpoints
 
 - We have a BookLendingEntity Class which has the following fields:
